@@ -1,29 +1,31 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+
+import Teaser from "../components/Teaser";
 
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-class MyRootComponent extends Component {
+class Collection extends Component {
+  
+  render() {
+    const { entities } = this.props.data.nodeQuery || {};
+    let TeaserComponents = [];
 
-    render() {
-        console.log(this.props)
-        return (
-            <div className="App">
-                <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h1 className="App-title">Welcome to React</h1>
-                </header>
-                <p className="App-intro">
-                    To get started, edit <code>src/App.js</code> and save to reload.
-                </p>
-            </div>
-        );
+    if(entities) {  
+      TeaserComponents = entities.map((entity) => {
+        return <Teaser key={entity.uuid} {...entity}/>;
+      });
     }
+
+    return (
+      <div>
+        { TeaserComponents }
+      </div>
+    );
+  }
 }
 
-export default graphql(gql`
+const CollectionWithData = graphql(gql`
   query homeNodes {
     nodeQuery(
       filter:{
@@ -43,6 +45,7 @@ export default graphql(gql`
       count
       entities {
         ... on Node {
+          uuid:entityUuid
           title
           published:entityPublished
           url:entityUrl {
@@ -53,12 +56,14 @@ export default graphql(gql`
           }
           author:entityOwner {
             name:entityLabel
+            on:entityCreated
             url:entityUrl {
               path
             }
           }
           tags:fieldTags {
             entity {
+              uuid:entityUuid
               title:entityLabel
               url:entityUrl {
                 path
@@ -87,4 +92,7 @@ export default graphql(gql`
       }
     }
   }
-`)(MyRootComponent);
+`)(Collection);
+
+export default CollectionWithData
+
