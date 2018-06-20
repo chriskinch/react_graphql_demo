@@ -23,7 +23,7 @@ class MyRootComponent extends Component {
     }
 }
 
-const MyRootComponentWithData = graphql(gql`
+export default graphql(gql`
   query homeNodes {
     nodeQuery(
       filter:{
@@ -88,5 +88,3 @@ const MyRootComponentWithData = graphql(gql`
     }
   }
 `)(MyRootComponent);
-
-export default MyRootComponentWithData
